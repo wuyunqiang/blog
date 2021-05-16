@@ -19,6 +19,7 @@ mobx
 redux
 egg
 同构
+jsbridge
 
 性能
 
@@ -37,7 +38,7 @@ eslint
 多端
 android
 rn
-jsbridge
+hy
 h5
 
 
