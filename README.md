@@ -11,12 +11,14 @@ dom
 浏览器
 ts
 node
+http系列
 
 框架：
 next
 mobx
 redux
 egg
+同构
 
 性能
 
@@ -25,6 +27,7 @@ egg
 webpack
 模块化
 ngnix
+cdn
 
 效率：
 git
