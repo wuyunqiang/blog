@@ -107,7 +107,7 @@ p.then(
     return Promise.reject("ddddd");
   })
   .then(
-    (data) => {},
+    () => {},
     (error) => {
       console.log("test error 5555:", error);
     }
