@@ -4,6 +4,7 @@ const State = {
   rejected: "rejected",
 };
 
+let count = 1;
 class MyPromise {
   state = State.pending;
   res = null;
@@ -33,7 +34,11 @@ class MyPromise {
   };
 
   isPromiseLike = (promise) => {
-    return promise && typeof promise.then === "function";
+    return (
+      typeof promise !== null &&
+      (typeof promise === "object" || typeof promise === "function") &&
+      typeof promise.then === "function"
+    );
   };
 
   runOne = (callback, resolve, reject) => {
@@ -78,7 +83,42 @@ class MyPromise {
     return new MyPromise((resolve, reject) => {
       this.handles.push({ resolve, reject, onFulfilled, onRejected });
       this.runMicrotask();
+      console.log("test then:" + count++ + "  handles:" + this.handles.length);
     });
+  }
+
+  catch(onRejected) {
+    return this.then(null, onRejected);
+  }
+  finally(onFinally) {
+    return this.then(
+      (data) => {
+        onFinally();
+        return data;
+      },
+      (reason) => {
+        onFinally();
+        throw reason;
+      }
+    );
+  }
+
+  static resolve(data) {
+    if (data instanceof Promise) {
+      return data;
+    }
+    let _resolve;
+    let _reject;
+    const p = new MyPromise((resolve, reject) => {
+      _resolve = resolve;
+      _reject = reject;
+    });
+    if (p.isPromiseLike(data)) {
+      data.then(_resolve, _reject);
+    }else{
+      _resolve(data);
+    }
+    return p;
   }
 }
 
@@ -86,18 +126,18 @@ const p = new MyPromise((resolve, reject) => {
   setTimeout(() => {
     resolve("aaaaa");
     reject("xxxxx");
-  }, 2000);
+  }, 3000);
 });
-
-p.then(
-  (data) => {
-    console.log("test data 111:", data);
-    return Promise.resolve("bbbbb");
-  },
-  (error) => {
-    console.log("test err 111:", error);
-  }
-)
+const p4 = p
+  .then(
+    (data) => {
+      console.log("test data 111:", data);
+      return Promise.resolve("bbbbb");
+    },
+    (error) => {
+      console.log("test err 111:", error);
+    }
+  )
   .then((data) => {
     console.log("test data 33333:", data);
     return "ccccc";
@@ -113,11 +153,15 @@ p.then(
     }
   );
 
-p.then(
-  (data) => {
-    console.log("test data 222:", data);
-  },
-  (error) => {
-    console.log("test err 222:", error);
-  }
-);
+p4.then(() => {});
+p4.then(() => {});
+p4.then(() => {});
+
+// p.then(
+//   (data) => {
+//     console.log("test data 222:", data);
+//   },
+//   (error) => {
+//     console.log("test err 222:", error);
+//   }
+// );
