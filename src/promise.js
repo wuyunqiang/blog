@@ -3,8 +3,6 @@ const State = {
   fulfilled: "fulfilled",
   rejected: "rejected",
 };
-
-let count = 1;
 class MyPromise {
   state = State.pending;
   res = null;
@@ -83,7 +81,6 @@ class MyPromise {
     return new MyPromise((resolve, reject) => {
       this.handles.push({ resolve, reject, onFulfilled, onRejected });
       this.runMicrotask();
-      console.log("test then:" + count++ + "  handles:" + this.handles.length);
     });
   }
 
