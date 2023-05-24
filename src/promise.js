@@ -115,47 +115,136 @@ class MyPromise {
     });
     if (p.isPromiseLike(data)) {
       data.then(_resolve, _reject);
-    }else{
+    } else {
       _resolve(data);
     }
     return p;
   }
+
+  static reject(reason) {
+    return new MyPromise((resolve, reject) => {
+      reject(reason);
+    });
+  }
+
+  static all(promises) {
+    return new MyPromise((resolve, reject) => {
+      let resList = [];
+      let length = 0;
+      promises
+        .map((item) => MyPromise.resolve(item))
+        .forEach((p, index) => {
+          p.then((res) => {
+            length++;
+            resList[index] = res;
+            if (length == promises.length) {
+              resolve(resList);
+            }
+          }, reject);
+        });
+    });
+  }
+
+  static race(promises) {
+    return new MyPromise((resolve, reject) => {
+      promises
+        .map((item) => MyPromise.resolve(item))
+        .forEach((p) => {
+          p.then(resolve, reject);
+        });
+    });
+  }
+  static any(promises) {
+    return new MyPromise((resolve, reject) => {
+      let errorList = [];
+      let length = 0;
+      promises
+        .map((item) => MyPromise.resolve(item))
+        .forEach((p, index) => {
+          p.then(
+            (res) => {
+              resolve(res);
+            },
+            (err) => {
+              length++;
+              errorList[index] = err;
+              if (length == promises.length) {
+                reject(errorList);
+              }
+            }
+          );
+        });
+    });
+  }
+
+  static allSettled(promises) {
+    return new MyPromise((resolve) => {
+      let resList = [];
+      let length = 0;
+      promises
+        .map((item) => MyPromise.resolve(item))
+        .forEach((p, index) => {
+          p.then(
+            (res) => {
+              length++;
+              resList[index] = {
+                status: "fulfilled",
+                value: res,
+              };
+            },
+            (err) => {
+              length++;
+              resList[index] = {
+                status: "rejected",
+                reason: err,
+              };
+            }
+          ).finally(() => {
+            if (length === promises.length) {
+              resolve(resList);
+            }
+          });
+        });
+    });
+  }
 }
 
-const p = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("aaaaa");
-    reject("xxxxx");
-  }, 3000);
-});
-const p4 = p
-  .then(
-    (data) => {
-      console.log("test data 111:", data);
-      return Promise.resolve("bbbbb");
-    },
-    (error) => {
-      console.log("test err 111:", error);
-    }
-  )
-  .then((data) => {
-    console.log("test data 33333:", data);
-    return "ccccc";
-  })
-  .then((data) => {
-    console.log("test data 444444:", data);
-    return Promise.reject("ddddd");
-  })
-  .then(
-    () => {},
-    (error) => {
-      console.log("test error 5555:", error);
-    }
-  );
+// const p = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve("aaaaa");
+//     reject("xxxxx");
+//   }, 3000);
+// });
+// const p4 = p
+//   .then(
+//     (data) => {
+//       console.log("test data 111:", data);
+//       return Promise.resolve("bbbbb");
+//     },
+//     (error) => {
+//       console.log("test err 111:", error);
+//     }
+//   )
+//   .then((data) => {
+//     console.log("test data 33333:", data);
+//     return "ccccc";
+//   })
+//   .then((data) => {
+//     console.log("test data 444444:", data);
+//     return Promise.reject("ddddd");
+//   })
+//   .then(
+//     () => {},
+//     (error) => {
+//       console.log("test error 5555:", error);
+//     }
+//   );
 
-p4.then(() => {});
-p4.then(() => {});
-p4.then(() => {});
+// p4.then(() => {
+
+// });
+// p4.then(() => {});
+// p4.then(() => {});
 
 // p.then(
 //   (data) => {
@@ -165,3 +254,14 @@ p4.then(() => {});
 //     console.log("test err 222:", error);
 //   }
 // );
+
+const p1 = MyPromise.resolve(111);
+const p2 = MyPromise.reject(2222);
+const p3 = MyPromise.resolve(33333);
+MyPromise.allSettled([p1, p2, p3])
+  .then((res) => {
+    console.log("res:", res);
+  })
+  .catch((err) => {
+    console.log("err:", err);
+  });
