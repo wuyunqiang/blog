@@ -1,3 +1,4 @@
+import microtask from './microtask.js'
 const State = {
   pending: "pending",
   fulfilled: "fulfilled",
@@ -74,7 +75,7 @@ class MyPromise {
    * 运行于微任务中
    * */
   #runMicrotask = () => {
-    queueMicrotask(this.#run);
+    microtask(this.#run);
   };
 
   then(onFulfilled, onRejected) {
