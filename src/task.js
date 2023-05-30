@@ -5,15 +5,14 @@
  * @returns Promise
  */
 export const ParallelMaxTask = async (list = [], max = 3) => {
-  let _resolve, _reject;
+  let _resolve;
   let resList = [];
-  const p = new Promise((resolve, reject) => {
+  const p = new Promise((resolve) => {
     _resolve = resolve;
-    _reject = reject;
   });
 
   if (!list.length) {
-    _reject(resList);
+    _resolve(resList);
     return p;
   }
   const tasks = list.map((item) => Promise.resolve(item));
@@ -61,14 +60,12 @@ export const ParallelMaxTask = async (list = [], max = 3) => {
 export const SerialTask = async (list = []) => {
   const resList = [];
   let _resolve;
-  let _reject;
 
-  const p = new Promise((resolve, reject) => {
+  const p = new Promise((resolve) => {
     _resolve = resolve;
-    _reject = reject;
   });
   if (!list.length) {
-    _reject(resList);
+    _resolve(resList);
     return;
   }
   let curIndex = 0;
