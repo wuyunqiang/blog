@@ -4,7 +4,7 @@ const State = {
   fulfilled: "fulfilled",
   rejected: "rejected",
 };
-class MyPromise {
+export class MyPromise {
   #state = State.pending;
   #res = null;
   #handles = [];
@@ -34,7 +34,7 @@ class MyPromise {
 
   #isPromiseLike = (promise) => {
     return (
-      typeof promise !== null &&
+       promise !== null &&
       (typeof promise === "object" || typeof promise === "function") &&
       typeof promise.then === "function"
     );
@@ -206,61 +206,3 @@ class MyPromise {
     });
   }
 }
-
-const p = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("aaaaa");
-    reject("xxxxx");
-  }, 3000);
-});
-const p4 = p
-  .then(
-    (data) => {
-      console.log("test data 111:", data);
-      return Promise.resolve("bbbbb");
-    },
-    (error) => {
-      console.log("test err 111:", error);
-    }
-  )
-  .then((data) => {
-    console.log("test data 33333:", data);
-    return "ccccc";
-  })
-  .then((data) => {
-    console.log("test data 444444:", data);
-    return Promise.reject("ddddd");
-  })
-  .then(
-    () => {},
-    (error) => {
-      console.log("test error 5555:", error, p);
-    }
-  );
-
-  const sourceP = Promise.resolve()
-  console.log("sourceP:", sourceP);
-
-// p4.then(() => {});
-// p4.then(() => {});
-// p4.then(() => {});
-
-// p.then(
-//   (data) => {
-//     console.log("test data 222:", data);
-//   },
-//   (error) => {
-//     console.log("test err 222:", error);
-//   }
-// );
-
-// const p1 = MyPromise.resolve(111);
-// const p2 = MyPromise.reject(2222);
-// const p3 = MyPromise.resolve(33333);
-// MyPromise.allSettled([p1, p2, p3])
-//   .then((res) => {
-//     console.log("res:", res);
-//   })
-//   .catch((err) => {
-//     console.log("err:", err);
-//   });

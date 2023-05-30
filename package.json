@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/wuyunqiang/blog/issues"
   },
-  "homepage": "https://github.com/wuyunqiang/blog#readme"
+  "homepage": "https://github.com/wuyunqiang/blog#readme",
+  "devDependencies": {
+    "eslint": "^8.41.0"
+  }
 }
