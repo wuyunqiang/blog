@@ -15,6 +15,8 @@ export const ParallelMaxTask = async (list = [], max = 3) => {
     _resolve(resList);
     return p;
   }
+  max = Math.min(max, list.length)
+  console.log('test max', max);
   const tasks = list.map((item) => Promise.resolve(item));
   let curParallelTaskCount = 0;
   let index = 0;
