@@ -102,9 +102,9 @@ export const SerialTask = async (list = []) => {
 };
 
 /**
- *
- * @param {Promise} task
- * @returns
+ * 将一个promise转换为一个可取消的promise
+ * @param {Promise} task 希望被转换的promise实例
+ * @returns {Promise} 返回具有cancel()&isCancel()的promise对象
  */
 export const TaskCancelable = (task) => {
   let _reject;
