@@ -15,8 +15,8 @@ export const ParallelMaxTask = async (list = [], max = 3) => {
     _resolve(resList);
     return p;
   }
-  max = Math.min(max, list.length)
-  console.log('test max', max);
+  max = Math.min(max, list.length);
+  console.log("test max", max);
   const tasks = list.map((item) => Promise.resolve(item));
   let curParallelTaskCount = 0;
   let index = 0;
@@ -98,5 +98,38 @@ export const SerialTask = async (list = []) => {
     }
   };
   run();
+  return p;
+};
+
+/**
+ *
+ * @param {Promise} task
+ * @returns
+ */
+export const TaskCancelable = (task) => {
+  let _reject;
+  let isCancel = false;
+  const _status = Symbol("cancel");
+  const cancelP = new Promise((resolve, reject) => {
+    _reject = reject;
+  });
+  const p = Promise.race([task, cancelP]);
+  /***
+   * 调用cancel时可能promise状态已经变为成功,
+   * 所以不能在cancel里面改变isCancel
+   * 只有catch的原因是cancel才代表被取消成功了
+   */
+  p.catch((reason) => {
+    if (reason === _status) {
+      isCancel = true;
+    }
+  });
+
+  p.cancel = () => {
+    _reject(_status);
+  };
+  p.isCancel = () => {
+    return isCancel;
+  };
   return p;
 };
