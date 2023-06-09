@@ -172,9 +172,11 @@ export class DynamicTasks {
   store = {}; // 存储结果
   handles = []; // 回调列表
   parallelMax;
+  frame = false;
 
   constructor(config = {}) {
     this.parallelMax = config.parallelMax || 3;
+    this.frame = config.frame;
   }
   getResult() {
     return this.store;
@@ -199,7 +201,10 @@ export class DynamicTasks {
     }
     const { task, key } = this.handles.shift();
     try {
-      const res = await nextFrameExecute(() => task(this.store));
+      const runner = this.frame
+        ? () => nextFrameExecute(() => task(this.store))
+        : () => task(this.store);
+      const res = await runner();
       this.store[key] = {
         status: "succ",
         data: res,
