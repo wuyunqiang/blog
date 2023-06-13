@@ -5,7 +5,7 @@ export type Config = {
 
 export type TaskItem = {
     key: string;
-    task: (res: any)=> Promise<any>,
+    task: (res: any)=> any,
     parallel?: boolean;
 }
 
