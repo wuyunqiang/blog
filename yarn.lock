@@ -252,6 +252,11 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
+dynamic-tasks@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/dynamic-tasks/-/dynamic-tasks-1.0.3.tgz#a4944d8ca10000882b34bdd6c11592761ff0bed9"
+  integrity sha512-cIE1KQu8bdMVlBYuVWHK3qE0DlLAAhBWIGQxaO6bOJjSG5LLPa3ICsa5OFKACIio9xqSG40zXPcEw9OgFNXmTA==
+
 escape-string-regexp@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
