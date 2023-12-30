@@ -1,6 +1,6 @@
 let curCount = 0;
 let map = new Map();
-const execute = (callback) => {
+const promise = (callback) => {
   if (map.get(curCount)) {
     const res = map.get(curCount);
     curCount++;
@@ -28,9 +28,15 @@ const run = (action) => {
   }
 };
 
+const execute = (task) => {
+  curCount = 0;
+  map = new Map();
+  run(task);
+};
+
 export const KillAwaitPromise = {
-  run,
   execute,
+  promise,
 };
 
 export default KillAwaitPromise;
