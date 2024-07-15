@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #interval {
+      font-size: 18;
+      margin-bottom: 10px;
+    }
+
+    #worker {
+      font-size: 18;
+      margin-bottom: 10px;
+    }
+
+    #timeout {
+      font-size: 18;
+      margin-bottom: 10px;
+    }
+
+    #raf {
+      font-size: 18;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="interval"></div>
+  <div id="worker"></div>
+  <div id="timeout"></div>
+  <div id="raf"></div>
+  <script>
+    const intervalDom = document.getElementById('interval');
+    const workerDom = document.getElementById('worker');
+    const timeoutDom = document.getElementById('timeout');
+    const rafDom = document.getElementById('raf');
+    function timer_interval() {
+      let countTime = 0;
+      setInterval(() => {
+        intervalDom.innerText = `interval: ${++countTime}`
+      }, 1000);
+    }
+    /**
+     * 模拟主线程随机阻塞
+    */
+    setInterval(() => {
+      let count;
+      for (let i = 0; i < 999999999; i++) {
+        count = i + count - count / 2;
+      }
+    }, Math.random() * 10 * 1000)
+
+
+    /**
+ * 使用 Web Worker 进行计时
+ */
+    function timer_worker() {
+      // 创建一个Blob对象，用于生成一个可以在Web Worker中执行的JavaScript代码URL
+      const blob = new Blob([
+        `let countTime = 0; // 初始化计数器变量
+    self.setInterval(() => { // 在Web Worker的上下文中设置一个定时器
+      countTime++; // 每次定时器触发时递增计数器
+      self.postMessage(countTime); // 使用postMessage方法发送计数器的值到主线程
+    }, 1000);` // 定时器的时间间隔设置为1秒
+      ], { type: 'application/javascript' }); // 指定Blob的内容类型为JavaScript
+
+      // 使用URL.createObjectURL方法创建一个可以被Web Worker使用的URL
+      const worker = new Worker(URL.createObjectURL(blob));
+
+      // 设置Web Worker的onmessage事件处理器
+      // 当Web Worker使用postMessage发送消息时，该处理器会被触发
+      worker.onmessage = ev => {
+        // 更新DOM元素workerDom的文本内容，显示从Web Worker接收到的计时器值
+        workerDom.innerText = `worker: ${ev.data}`;
+      };
+    }
+
+
+    /**
+     * 使用timeout补偿差值计时器
+    */
+    function timer_setTimeout() {
+      const speed = 1000; // 设置定时器的间隔速度为1000毫秒（1秒）
+      let countTime = 0; // 初始化计时器计数变量
+      let start = new Date().getTime(); // 记录计时开始时的时间戳
+
+      // 定义计时器的执行函数
+      function run() {
+        countTime++; // 每次执行时递增计时器的计数
+
+        // 计算按照计时器当前速度实际经过的时间（countTime * 速度）
+        let real = (countTime * speed);
+
+        // 计算从计时开始到现在系统经过的时间
+        let ideal = (new Date().getTime() - start);
+
+        // 计算实际时间和理想时间之间的差异
+        let diff = (ideal - real);
+
+        // 使用系统时间进行修复，调整下一次setTimeout的延迟时间
+        // 通过设置speed - diff，尝试校正setTimeout的延迟，以补偿偏差
+        window.setTimeout(run, (speed - diff));
+
+        // 更新页面元素timeoutDom的文本内容，显示当前计时器的值
+        timeoutDom.innerText = `setTimeout: ${countTime}`;
+      }
+
+      // 启动计时器，初始调用run函数，并设置延迟为speed
+      window.setTimeout(run, speed);
+    }
+
+
+    /**
+     * 使用raf模拟模拟计时器
+     * **/
+    function timer_raf() {
+      let delay = 1000; // 设置计时器的时间间隔为1000毫秒（1秒）
+      let countTime = 0; // 初始化计时器计数变量
+      let startTime = Date.now(); // 记录计时器开始的初始时间点
+
+      // 定义计时器回调函数，用于更新DOM元素显示的计时数值
+      const cb = () => {
+        rafDom.innerText = `raf: ${++countTime}`; // 每次调用时递增countTime并更新到页面元素
+      };
+
+      // 定义循环函数，用于控制requestAnimationFrame的执行
+      function loop() {
+        const now = Date.now(); // 获取当前时间
+        // 检查当前时间与计时器开始时间的差值是否大于或等于设定的时间间隔
+        if (now - startTime >= delay) {
+          cb(); // 如果是，则执行回调函数更新计时器
+          startTime = now; // 重置计时器的开始时间为当前时间，以便下一次计时
+        }
+        requestAnimationFrame(loop); // 请求浏览器在下一可用帧中执行loop函数
+      }
+
+      // 启动循环，开始计时器
+      loop();
+    }
+    timer_interval();
+    timer_worker();
+    timer_setTimeout();
+    timer_raf()
+  </script>
+</body>
+
+</html>
