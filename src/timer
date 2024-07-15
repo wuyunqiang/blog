@@ -93,17 +93,17 @@
         countTime++; // 每次执行时递增计时器的计数
 
         // 计算按照计时器当前速度实际经过的时间（countTime * 速度）
-        let real = (countTime * speed);
+        let realTime = (countTime * speed);
 
         // 计算从计时开始到现在系统经过的时间
-        let ideal = (new Date().getTime() - start);
+        let sysTime = (Date.now() - start);
 
         // 计算实际时间和理想时间之间的差异
-        let diff = (ideal - real);
+        let patch = (sysTime - realTime);
 
         // 使用系统时间进行修复，调整下一次setTimeout的延迟时间
         // 通过设置speed - diff，尝试校正setTimeout的延迟，以补偿偏差
-        window.setTimeout(run, (speed - diff));
+        window.setTimeout(run, (speed - patch));
 
         // 更新页面元素timeoutDom的文本内容，显示当前计时器的值
         timeoutDom.innerText = `setTimeout: ${countTime}`;
