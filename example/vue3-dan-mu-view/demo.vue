@@ -40,6 +40,7 @@ const onItem = (data: any) => {
         :count="8"
         :row="4"
         :row-h="30"
+        :mode="'css'"
         :delays="[500, 3000]"
         :frames="[0.5, 1.2]"
         :list-data="list"
